@@ -1,0 +1,13 @@
+{
+  "invalid_parameter": "Invalid parameter",
+  "existed": " existed",
+  "not_found": " not found",
+  "unauthorized": "Unauthorized",
+
+  "application": "application",
+  "user": "user",
+  "name": "name",
+  "description": "description",
+  "RE-001": "Email already is existing",
+  "LO-001": "Email or password is incorrect"
+}
