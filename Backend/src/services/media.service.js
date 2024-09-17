@@ -47,11 +47,14 @@ MediaService.insertImage = async (req, res, next) => {
 
 MediaService.getImagesHistory = async (req, res, next) => {
   try {
+    const { limit = 10, offset = 1 } = req.query;
     const userID = req.user['id'];
     const images = await imageRepository.createQueryBuilder('images')
                       .innerJoin('images.user_images', 'user_images', 'user_images.user_id = :user_id', { user_id: userID})
                       .select()
                       .orderBy('images.created_at', 'DESC')
+                      .limit(limit)
+                      .offset(limit * (offset - 1))
                       .getMany();
     return ok(req, res, MediaMapper.toImagesHistoryResponse(images));
   } catch (error) {
