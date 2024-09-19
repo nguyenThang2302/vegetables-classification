@@ -41,7 +41,7 @@ export default function Login({ navigation }: any) {
             text1: '',
             text2: 'Login is successfully'
           });
-          AsyncStorage.setItem('access_token', response.data.access_token);
+          AsyncStorage.setItem('access_token', response.data.data.access_token);
           navigation.reset({
             index: 0,
             routes: [{ name: 'Dashboard' }],

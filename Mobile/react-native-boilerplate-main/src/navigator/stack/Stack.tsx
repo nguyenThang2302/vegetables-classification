@@ -2,16 +2,18 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StackParamList } from './Stack.typeDefs';
 import { DrawerProps } from '../drawer/Drawer.typeDefs';
-import { StackHeaderLeft, StackHeaderTitle } from './components';
+import { StackHeaderTitle } from './components';
 import { colors } from '@theme';
 
 // views
 import Home from '@views/Home';
 import Details from '@views/Details';
-import Profile from '@views/Profile';
+import Profile from '@views/ProfileScreen/Profile';
 import Start from '@views/StartScreen/Start';
 import Login from '@views/LoginScreen/Login';
 import Register from '@views/RegisterScreen/Register';
+import TabNavigator from '@navigator/tab';
+import HistoryImage from '@views/HistoryImageScreen/HistoryImage';
 
 const Stack = createNativeStackNavigator<StackParamList>();
 
@@ -25,12 +27,38 @@ export function HomeStackNavigator({ navigation }: DrawerProps) {
   return (
     <Stack.Navigator screenOptions={navigationProps}>
       <Stack.Screen
-        component={Start}
-        name="StartStack"
+        component={Home}
+        name="HomeStack"
+        options={{
+          title: 'Home',
+          headerTitle: () => <StackHeaderTitle />,
+          headerTitleAlign: 'center',
+        }}
       />
       <Stack.Screen
-        component={Login}
-        name="Login"
+        component={Details}
+        name="DetailsStack"
+        options={{
+          title: 'Details',
+          headerTitle: () => <StackHeaderTitle />,
+          headerTitleAlign: 'center',
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+export function HistoryImageNavigatior({ navigation }: DrawerProps) {
+  return (
+    <Stack.Navigator screenOptions={navigationProps}>
+      <Stack.Screen
+        component={HistoryImage}
+        name="HistoryImage"
+        options={{
+          title: 'HistoryImage',
+          headerTitle: () => <StackHeaderTitle />,
+          headerTitleAlign: 'center',
+        }}
       />
     </Stack.Navigator>
   );
@@ -51,6 +79,10 @@ export function StartStackNavigator({ navigation }: DrawerProps) {
         component={Register}
         name="Register"
       />
+      <Stack.Screen
+        component={TabNavigator}
+        name="Dashboard"
+      />
     </Stack.Navigator>
   );
 }
@@ -64,7 +96,6 @@ export function ProfileStackNavigator({ navigation }: DrawerProps) {
         options={{
           title: 'Profile',
           headerTitle: () => <StackHeaderTitle />,
-          headerLeft: () => <StackHeaderLeft onPress={() => navigation.toggleDrawer()} />,
           headerTitleAlign: 'center',
         }}
       />

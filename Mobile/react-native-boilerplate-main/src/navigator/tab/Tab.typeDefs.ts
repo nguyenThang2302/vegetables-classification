@@ -9,7 +9,7 @@ export type TabBarStatus = {
 export type TabParamList = {
   HomeTab: undefined;
   ProfileTab: undefined;
-  // add more tab params...
+  HistoryImageTab: undefined;
 };
 
 export type TabProps = BottomTabScreenProps<TabParamList, keyof TabParamList>;

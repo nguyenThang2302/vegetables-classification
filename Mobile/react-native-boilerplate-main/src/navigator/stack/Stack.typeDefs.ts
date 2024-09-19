@@ -7,6 +7,8 @@ export type StackParamList = {
   StartStack: undefined;
   Login: undefined;
   Register: undefined;
+  Dashboard: undefined;
+  HistoryImage: undefined;
 };
 
 export type StackProps = NativeStackScreenProps<StackParamList, keyof StackParamList>;
