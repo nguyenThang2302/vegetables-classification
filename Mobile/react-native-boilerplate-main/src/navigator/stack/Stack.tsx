@@ -12,6 +12,7 @@ import Profile from '@views/Profile';
 import Start from '@views/StartScreen/Start';
 import Login from '@views/LoginScreen/Login';
 import Register from '@views/RegisterScreen/Register';
+import TabNavigator from '@navigator/tab';
 
 const Stack = createNativeStackNavigator<StackParamList>();
 
@@ -25,12 +26,22 @@ export function HomeStackNavigator({ navigation }: DrawerProps) {
   return (
     <Stack.Navigator screenOptions={navigationProps}>
       <Stack.Screen
-        component={Start}
-        name="StartStack"
+        component={Home}
+        name="HomeStack"
+        options={{
+          title: 'Home',
+          headerTitle: () => <StackHeaderTitle />,
+          headerTitleAlign: 'center',
+        }}
       />
       <Stack.Screen
-        component={Login}
-        name="Login"
+        component={Details}
+        name="DetailsStack"
+        options={{
+          title: 'Details',
+          headerTitle: () => <StackHeaderTitle />,
+          headerTitleAlign: 'center',
+        }}
       />
     </Stack.Navigator>
   );
@@ -50,6 +61,10 @@ export function StartStackNavigator({ navigation }: DrawerProps) {
       <Stack.Screen
         component={Register}
         name="Register"
+      />
+      <Stack.Screen
+        component={TabNavigator}
+        name="Dashboard"
       />
     </Stack.Navigator>
   );
