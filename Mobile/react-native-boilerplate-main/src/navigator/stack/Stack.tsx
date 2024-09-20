@@ -35,15 +35,6 @@ export function HomeStackNavigator({ navigation }: DrawerProps) {
           headerTitleAlign: 'center',
         }}
       />
-      <Stack.Screen
-        component={Details}
-        name="DetailsStack"
-        options={{
-          title: 'Details',
-          headerTitle: () => <StackHeaderTitle />,
-          headerTitleAlign: 'center',
-        }}
-      />
     </Stack.Navigator>
   );
 }
