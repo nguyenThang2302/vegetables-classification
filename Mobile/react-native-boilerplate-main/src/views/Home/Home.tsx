@@ -1,7 +1,8 @@
 import React from 'react';
 import { Text, View, StyleSheet, StatusBar } from 'react-native';
-import Button from '@components/Button';
+import Background from '../../components/DashboardScreen/Background';
 import { StackProps } from '@navigator/stack';
+import Camera from '@views/CameraScreen/Camera';
 import { colors } from '@theme';
 
 const styles = StyleSheet.create({
@@ -34,14 +35,9 @@ const styles = StyleSheet.create({
 export default function Home({ navigation }: StackProps) {
   return (
     <View style={styles.root}>
-      <StatusBar barStyle="light-content" />
-      <Text style={styles.title}>Home</Text>
-      <Button
-        title="Go to Details"
-        titleStyle={styles.buttonTitle}
-        style={styles.button}
-        onPress={() => navigation.navigate('DetailsStack', { from: 'Home' })}
-      />
+      <Background>
+        <Camera/>
+      </Background>
     </View>
   );
 }
