@@ -100,13 +100,8 @@ export function ProfileStackNavigator({ navigation }: DrawerProps) {
         }}
       />
       <Stack.Screen
-        component={Details}
-        name="DetailsStack"
-        options={{
-          title: 'Details',
-          headerTitle: () => <StackHeaderTitle />,
-          headerTitleAlign: 'center',
-        }}
+        component={Start}
+        name="StartStack"
       />
     </Stack.Navigator>
   );

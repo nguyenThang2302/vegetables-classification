@@ -3,12 +3,10 @@ import { View, Text, Image, StyleSheet, TouchableOpacity, ActivityIndicator } fr
 import Background from '../../components/DashboardScreen/Background';
 import { fetchProfileData } from 'src/services/user/getProfile';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useNavigation } from '@react-navigation/native';
 
-export default function Profile() {
+export default function Profile({ navigation }: any) {
   const [userData, setUserData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const navigation = useNavigation(); 
 
   useEffect(() => {
     fetchProfileData()
@@ -24,7 +22,10 @@ export default function Profile() {
 
   const handleLogout = () => {
     AsyncStorage.removeItem('access_token');
-    navigation.navigate("Login");
+    navigation.reset({
+      index: 0,
+      routes: [{ name: 'StartStack' }],
+    });
   };
 
   return (
