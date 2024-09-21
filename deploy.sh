@@ -38,20 +38,24 @@ function clean {
 }
 
 function build {
-TMP_PATH="$(pwd)/.tmp"
  ENV_FILE="$(pwd)/${TARGET_FOLDER}/env.json"
  echo ">>> Run build for ${TARGET_FOLDER}"
- # git clone -b "${BRANCH}" "${GIT_URL}" "${TMP_PATH}"
+ git clone -b "${BRANCH}" "${GIT_URL}" "${TMP_PATH}"
  cd "${TMP_PATH}/${TARGET_FOLDER}"
- cp .env.example .env
- cat ${ENV_FILE} | jq -r "to_entries|map(\"\(.key)=\(.value|tostring)\")|.[]" | while read item;
- do
-   arr=(${item//=/ })
-   key=${arr[0]}
-   value=${arr[1]}
-   sed -i -e "s|^${key}=.*|${key}=\"${value}\"|g" .env
- done
- sudo yarn install
+ if [ "${TARGET_FOLDER}" = "Backend" ]; then
+    cp .env.example .env
+    cat ${ENV_FILE} | jq -r "to_entries|map(\"\(.key)=\(.value|tostring)\")|.[]" | while read item;
+    do
+      arr=(${item//=/ })
+      key=${arr[0]}
+      value=${arr[1]}
+      sed -i -e "s|^${key}=.*|${key}=\"${value}\"|g" .env
+    done
+    sudo yarn install
+ fi
+ if [ "${TARGET_FOLDER}" = "Mobile" ]; then
+    sudo npm install
+ fi
  sudo rm -rf node_modules
 }
 
@@ -66,7 +70,13 @@ function deploy {
  # Copy code to server
  rsync -r -z -e "ssh ${SSH_KEY}" "${TMP_PATH}/${TARGET_FOLDER}/" "${HOST}:/${HOST_PATH}/vegetables-classification/${TARGET_FOLDER}/${VERSION}/"
 
- ssh $SSH_KEY $HOST "source ~/.nvm/nvm.sh && nvm use v20.17.0 && cd ${HOST_PATH}/vegetables-classification/${TARGET_FOLDER}/${VERSION}/ && ${HOST_PATH}/.nvm/versions/node/v20.17.0/bin/yarn install"
+ if [ "${TARGET_FOLDER}" = "Backend" ]; then
+    ssh $SSH_KEY $HOST "source ~/.nvm/nvm.sh && nvm use v20.17.0 && cd ${HOST_PATH}/vegetables-classification/${TARGET_FOLDER}/${VERSION}/ && ${HOST_PATH}/.nvm/versions/node/v20.17.0/bin/yarn install"
+ fi
+
+ if [ "${TARGET_FOLDER}" = "Mobile" ]; then
+    ssh $SSH_KEY $HOST "source ~/.nvm/nvm.sh && nvm use v20.17.0 && cd ${HOST_PATH}/vegetables-classification/${TARGET_FOLDER}/${VERSION}/ && ${HOST_PATH}/.nvm/versions/node/v20.17.0/bin/npm install"
+ fi
 
  # Symlink to server and restart
  # ssh $SSH_KEY $HOST "cd ${HOST_PATH}/vegetables-classification/${TARGET_FOLDER}/${VERSION}/ && ${HOST_PATH}/.nvm/versions/node/v20.17.0/bin/pm2 delete app.local"
