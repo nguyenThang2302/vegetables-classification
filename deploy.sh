@@ -38,11 +38,11 @@ function clean {
 }
 
 function build {
- ENV_FILE="$(pwd)/${TARGET_FOLDER}/env.json"
  echo ">>> Run build for ${TARGET_FOLDER}"
  git clone -b "${BRANCH}" "${GIT_URL}" "${TMP_PATH}"
- cd "${TMP_PATH}/${TARGET_FOLDER}"
  if [ "${TARGET_FOLDER}" = "Backend" ]; then
+    cd "${TMP_PATH}/${TARGET_FOLDER}"
+    ENV_FILE="$(pwd)/env.json"
     cp .env.example .env
     cat ${ENV_FILE} | jq -r "to_entries|map(\"\(.key)=\(.value|tostring)\")|.[]" | while read item;
     do
@@ -52,11 +52,16 @@ function build {
       sed -i -e "s|^${key}=.*|${key}=\"${value}\"|g" .env
     done
     sudo yarn install
+    sudo rm -rf node_modules
  fi
  if [ "${TARGET_FOLDER}" = "Mobile" ]; then
+    cd "${TMP_PATH}/${TARGET_FOLDER}"
     sudo npm install
+    sudo rm -rf node_modules
  fi
- sudo rm -rf node_modules
+ if [ "${TARGET_FOLDER}" = "AI" ]; then
+    cd "${TMP_PATH}/${TARGET_FOLDER}"
+ fi
 }
 
 function predeploy {
@@ -67,15 +72,22 @@ function predeploy {
 function deploy {
  echo ">>> Run deploy"
  ssh $SSH_KEY $HOST "rm -rf /${HOST_PATH}/vegetables-classification/${TARGET_FOLDER}/*"
- # Copy code to server
- rsync -r -z -e "ssh ${SSH_KEY}" "${TMP_PATH}/${TARGET_FOLDER}/" "${HOST}:/${HOST_PATH}/vegetables-classification/${TARGET_FOLDER}/${VERSION}/"
 
  if [ "${TARGET_FOLDER}" = "Backend" ]; then
+    # Copy code to server BE
+    rsync -r -z -e "ssh ${SSH_KEY}" "${TMP_PATH}/${TARGET_FOLDER}/" "${HOST}:/${HOST_PATH}/vegetables-classification/${TARGET_FOLDER}/${VERSION}/"
     ssh $SSH_KEY $HOST "source ~/.nvm/nvm.sh && nvm use v20.17.0 && cd ${HOST_PATH}/vegetables-classification/${TARGET_FOLDER}/${VERSION}/ && ${HOST_PATH}/.nvm/versions/node/v20.17.0/bin/yarn install"
  fi
 
  if [ "${TARGET_FOLDER}" = "Mobile" ]; then
+    # Copy code to server FE
+    rsync -r -z -e "ssh ${SSH_KEY}" "${TMP_PATH}/${TARGET_FOLDER}/" "${HOST}:/${HOST_PATH}/vegetables-classification/${TARGET_FOLDER}/${VERSION}/"
     ssh $SSH_KEY $HOST "source ~/.nvm/nvm.sh && nvm use v20.17.0 && cd ${HOST_PATH}/vegetables-classification/${TARGET_FOLDER}/${VERSION}/ && ${HOST_PATH}/.nvm/versions/node/v20.17.0/bin/npm install"
+ fi
+
+ if [ "${TARGET_FOLDER}" = "AI" ]; then
+    # Copy code to server AI
+    rsync -r -z -e "ssh ${SSH_KEY}" "${TMP_PATH}/${TARGET_FOLDER}/src/" "${HOST}:/${HOST_PATH}/vegetables-classification/${TARGET_FOLDER}/${VERSION}/"
  fi
 
  # Symlink to server and restart
