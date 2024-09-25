@@ -1,18 +1,13 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel
 from PIL import Image
 import numpy as np
 import tensorflow as tf
-import requests
 import io
 
 app = FastAPI()
 
 class_names = ['Bean', 'Bitter_Gourd', 'Bottle_Gourd', 'Brinjal', 'Broccoli', 'Cabbage', 'Capsicum', 'Carrot', 'Cauliflower', 'Cucumber', 'Papaya', 'Potato', 'Pumpkin', 'Radish', 'Tomato']
-
-class ImageURL(BaseModel):
-    image_url: str
 
 def preprocess_image(image: Image.Image) -> np.ndarray:
     image = image.resize((224, 224))  # Resize image to fit the model's input
@@ -37,14 +32,13 @@ def model_prediction(image: np.ndarray) -> dict:
     }
 
 @app.post("/predict")
-async def predict(payload: ImageURL):
+async def predict(image: UploadFile = File(...)):
     try:
-        # Download and open the image from the URL
-        response = requests.get(payload.image_url)
-        response.raise_for_status()  
-        image = Image.open(io.BytesIO(response.content))
+        # Read the uploaded image file and convert it to PIL Image
+        image_data = await image.read()
+        image = Image.open(io.BytesIO(image_data))
     except Exception as e:
-        raise HTTPException(status_code=400, detail="Could not download or open the image.") from e
+        raise HTTPException(status_code=400, detail="Could not open the image file.") from e
 
     # Preprocess and predict
     image_np = preprocess_image(image)

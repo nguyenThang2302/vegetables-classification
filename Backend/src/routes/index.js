@@ -1,6 +1,7 @@
 const winston = require('winston');
 const express = require('express');
 const bodyParser = require('body-parser');
+const path = require('path');
 const cors = require('cors');
 const compression = require('compression');
 const cookieParser = require('cookie-parser');
@@ -47,6 +48,7 @@ module.exports = async (app, middleware) => {
     };
   }
 
+  apiRouter.use('/uploads', express.static(path.join(__dirname, '../uploads')));
   apiRouter.use(bodyParser.json());
   apiRouter.use(bodyParser.urlencoded({ extended: true }));
   apiRouter.use(cors(corsOptionsDelegate));
