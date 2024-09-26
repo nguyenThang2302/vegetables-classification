@@ -8,6 +8,7 @@ const Camera: React.FC = () => {
   const webcamRef = useRef<Webcam>(null);
   const [photoUri, setPhotoUri] = useState<string | null>(null);
   const [resultImage, setResultImage] = useState<string | null>(null);
+  const [confidence, setConfidence] = useState<number | null>(null);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [showCamera, setShowCamera] = useState<boolean>(false);
   const [showCapture, setShowCapture] = useState<boolean>(true);
@@ -47,6 +48,8 @@ const Camera: React.FC = () => {
       const response = await submitImage(formData);
       setLoading(false);
       setResultImage(response.data.name);
+      console.log(response.data.confidence);
+      setConfidence(response.data.confidence);
     } catch (error) {
       console.error('Failed to submit image:', error);
     }
@@ -66,6 +69,9 @@ const Camera: React.FC = () => {
             ref={webcamRef}
             screenshotFormat="image/jpeg"
             style={styles.webcam}
+            videoConstraints={{
+              facingMode: "user"
+            }}
           />
           <TouchableOpacity onPress={capturePhoto} style={styles.captureButton}>
             <Image
@@ -87,7 +93,7 @@ const Camera: React.FC = () => {
         <Image source={{ uri: photoUri }} style={styles.imagePreview} />
       )}
       {resultImage && (
-        <Text style={styles.resultText}>{resultImage}</Text>
+        <Text style={styles.resultText}>{resultImage} {(confidence ? `: ${confidence}%` : '')}</Text>
       )}
     </>
   )}
