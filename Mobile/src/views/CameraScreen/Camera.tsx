@@ -1,106 +1,167 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { View, StyleSheet, TouchableOpacity, Image, ActivityIndicator, Text } from 'react-native';
-import Webcam from 'react-webcam';
+import React, { useState, useRef } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View, Image, ActivityIndicator } from 'react-native';
+import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { Button } from '@rneui/themed';
 import { submitImage } from 'src/services/media/submitImage';
 
-const Camera: React.FC = () => {
-  const webcamRef = useRef<Webcam>(null);
+export default function Camera() {
+  const [facing, setFacing] = useState<CameraType>('back');
+  const [permission, requestPermission] = useCameraPermissions();
   const [photoUri, setPhotoUri] = useState<string | null>(null);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [confidence, setConfidence] = useState<number | null>(null);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
-  const [showCamera, setShowCamera] = useState<boolean>(false);
-  const [showCapture, setShowCapture] = useState<boolean>(true);
   const [loading, setLoading] = useState(false);
+  const [showCamera, setShowCamera] = useState(false);
+  const [showButtonCapture, setShowButtonCapture] = useState(true);
+  const [showButtonSubmit, setShowButtonSubmit] = useState(false);
+  const [isButtonCancelCamera, setIsButtonCancelCamera] = useState(false);
+  const [showButtonCancelSubmit, setShowButtonCancelSubmit] = useState(false);
+  const [initCapureButton, setInitCapureButton] = useState(true);
+  const cameraRef = useRef(null);
 
-  const capturePhoto = () => {
-    if (webcamRef.current) {
-      const imageSrc = webcamRef.current.getScreenshot();
-      if (imageSrc) {
-        setPhotoUri(imageSrc);
-        fetch(imageSrc)
-          .then(res => res.blob())
-          .then(blob => {
-            const timestamp = Date.now();
-            const file = new File([blob], `photo_${timestamp}.jpg`, { type: 'image/jpeg' });
-            setPhotoFile(file); 
-          });
-        setShowCapture(false);
-        setShowCamera(false);
-      }
+  if (!permission) {
+    return <View />;
+  }
+
+  if (!permission.granted) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.message}>We need your permission to show the camera</Text>
+        <Button onPress={requestPermission} title="grant permission" />
+      </View>
+    );
+  }
+
+  const capturePhoto = async () => {
+    if (cameraRef.current) {
+      const photo = await cameraRef.current.takePictureAsync({ quality: 0.7, base64: true });
+      setShowButtonCancelSubmit(true);
+      setShowButtonSubmit(true);
+      setPhotoUri(photo.uri);
+      setPhotoFile(photo);
+      setShowCamera(false);
     }
   };
 
-  const toggleCamera = () => {
+  const showCameraView = async () => {
+    setInitCapureButton(false);
+    setIsButtonCancelCamera(true);
+    setShowButtonCapture(false);
     setShowCamera(true);
+    setResultImage(null);
+    setPhotoUri(null);
   };
 
-  useEffect(() => {
-    
-  }, []);
+  const disableCameraView = async () => {
+    setInitCapureButton(true);
+    setIsButtonCancelCamera(false);
+    setShowButtonCapture(true);
+  };
 
-  const handelSubmitImage = async () => {
+  const disableSubmitImage = async () => {
+    setResultImage(null);
+    setInitCapureButton(true);
+    setPhotoUri(null);
+    setShowButtonCancelSubmit(false);
+    setShowButtonCapture(true);
+  };
+
+  const handleSubmitImage = async () => {
     setLoading(true);
     const formData = new FormData();
-    formData.append('image', photoFile);
+    if (photoFile) {
+      formData.append('image', {
+        uri: photoUri,
+        name: 'photo.jpg',
+        type: 'image/jpeg',
+      });
+    }
+
     try {
       const response = await submitImage(formData);
+      setShowButtonCapture(true);
+      setShowButtonSubmit(false);
       setLoading(false);
       setResultImage(response.data.name);
-      console.log(response.data.confidence);
       setConfidence(response.data.confidence);
     } catch (error) {
       console.error('Failed to submit image:', error);
+      setLoading(false);
     }
   };
 
   return (
     <View style={styles.container}>
-  {loading ? (
-    <View>
-      <ActivityIndicator size="large" color="#0000ff" />
-    </View>
-  ) : (
-    <>
-      {showCamera ? (
-        <>
-          <Webcam
-            ref={webcamRef}
-            screenshotFormat="image/jpeg"
-            style={styles.webcam}
-            videoConstraints={{
-              facingMode: "user"
-            }}
-          />
-          <TouchableOpacity onPress={capturePhoto} style={styles.captureButton}>
-            <Image
-              source={{ uri: 'https://img.icons8.com/nolan/64/camera.png' }}
-              style={styles.icon}
-            />
-          </TouchableOpacity>
-        </>
-      ) : showCapture ? (
-        <Button onPress={toggleCamera} containerStyle={{ borderRadius: 10 }}>
-          Capture
-        </Button>
+      {loading ? (
+        <ActivityIndicator size="large" color="#0000ff" />
       ) : (
-        <Button onPress={handelSubmitImage} containerStyle={{ borderRadius: 10 }}>
-          Submit
-        </Button>
+        <>
+          {showCamera && isButtonCancelCamera && (
+            <View>
+              <CameraView
+                ref={cameraRef}
+                style={styles.camera}
+                facing={facing}
+              >
+              </CameraView>
+              <TouchableOpacity onPress={capturePhoto} style={styles.captureButton}>
+                <Image
+                  source={{ uri: 'https://img.icons8.com/nolan/64/camera.png' }}
+                  style={styles.icon}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={disableCameraView} style={styles.captureButton}>
+                <Image
+                  source={{ uri: 'https://img.icons8.com/nolan/64/cancel.png' }}
+                  style={styles.icon}
+                />
+              </TouchableOpacity>
+            </View>
+          )}
+          {initCapureButton && (
+            <View style={styles.buttonContainer}>
+              <Button onPress={showCameraView} containerStyle={{ borderRadius: 10, marginTop: 20 }}>
+                Capture
+              </Button>
+            </View>
+          )}
+          {photoUri && (
+            <>
+              <Image source={{ uri: photoUri }} style={styles.imagePreview} />
+              {showButtonSubmit && showButtonCancelSubmit && (
+                <View style={styles.buttonContainer}>
+                  <Button onPress={handleSubmitImage} containerStyle={{ borderRadius: 10, marginTop: 20 }}>
+                    Submit
+                  </Button>
+                  <Button onPress={disableSubmitImage} containerStyle={{ borderRadius: 10, marginTop: 20, marginLeft: 10 }}>
+                    Cancel
+                  </Button>
+                  <Button onPress={showCameraView} containerStyle={{ borderRadius: 10, marginLeft: 10, marginTop: 20 }}>
+                    Repeat
+                  </Button>
+                </View>
+              )}
+              {showButtonCapture && (
+                <View style={styles.buttonContainer}>
+                  <Button onPress={showCameraView} containerStyle={{ borderRadius: 10, marginTop: 20 }}>
+                    Capture
+                  </Button>
+                  <Button onPress={disableSubmitImage} containerStyle={{ borderRadius: 10, marginTop: 20, marginLeft: 10 }}>
+                    Cancel
+                  </Button>
+                </View>
+              )}
+            </>
+          )}
+          {resultImage && (
+            <Text style={styles.resultText}>{resultImage} {(confidence ? `: ${confidence}%` : '')}</Text>
+          )}
+        </>
       )}
-      {photoUri && (
-        <Image source={{ uri: photoUri }} style={styles.imagePreview} />
-      )}
-      {resultImage && (
-        <Text style={styles.resultText}>{resultImage} {(confidence ? `: ${confidence}%` : '')}</Text>
-      )}
-    </>
-  )}
-</View>
-
+    </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -108,21 +169,44 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  webcam: {
-    width: '100%',
-    height: '60%',
+  message: {
+    textAlign: 'center',
+    paddingBottom: 10,
+  },
+  camera: {
+    width: 300,
+    height: 400,
+    borderRadius: 20,
+    overflow: 'hidden',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    backgroundColor: 'transparent',
+    margin: 16,
+    justifyContent: 'space-around',
   },
   button: {
-    padding: 10,
-    borderWidth: 2,
-    borderColor: 'gray',
-    borderRadius: 40,
-    backgroundColor: 'white',
-    marginBottom: 10,
-    width: 150,
-    height: 60,
-    justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'white',
+    padding: 10,
+    borderRadius: 5,
+  },
+  text: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: 'black',
+  },
+  imagePreview: {
+    width: 500,
+    height: '60%',
+    resizeMode: 'contain',
+    marginTop: 10,
+    borderRadius: 40,
+  },
+  resultText: {
+    fontSize: 20,
+    marginTop: 20,
+    color: '#000',
   },
   captureButton: {
     padding: 10,
@@ -135,20 +219,11 @@ const styles = StyleSheet.create({
     height: 60,
     justifyContent: 'center',
     alignItems: 'center',
+    marginLeft: 70,
+    margin: 16,
   },
   icon: {
     width: 40,
     height: 40,
   },
-  imagePreview: {
-    width: 300,
-    height: '40%',
-    resizeMode: 'contain',
-  },
-  resultText: {
-    fontSize: 25,
-    color: '#000',
-  }
 });
-
-export default Camera;
