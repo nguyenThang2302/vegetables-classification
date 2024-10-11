@@ -9,5 +9,8 @@
   "name": "name",
   "description": "description",
   "RE-001": "Email already is existing",
-  "LO-001": "Email or password is incorrect"
+  "LO-001": "Email or password is incorrect",
+  "FO-001": "Email is not found",
+  "FO-002": "Token is invalid",
+  "FO-003": "Code is invalid"
 }

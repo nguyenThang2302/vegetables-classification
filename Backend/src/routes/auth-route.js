@@ -14,6 +14,18 @@ function addRoutes(router, middleware, controllers) {
     validate([AuthValidator.loginValidator]),
     controllers.authController.login
   );
+
+  router.post(
+    '/forgot-password',
+    validate([AuthValidator.forgotPasswordValidator]),
+    controllers.authController.forgotPassword
+  )
+
+  router.put(
+    '/reset-password',
+    validate([AuthValidator.resetPasswordValidator]),
+    controllers.authController.resetPassword
+  );
 }
 
 function apiRouter(middleware, controllers) {

@@ -12,3 +12,9 @@ AuthMapper.toInfoLogin = (access_token) => ({ data: {
   token_type: "Bearer",
   expires_in: JWT_ACCESS_TOKEN_EXPIRES_IN
 }});
+
+AuthMapper.toResponseForgotPassword = (token) => ({ data: {
+  forgot_token: token,
+  token_type: "Bearer",
+  expires_in: JWT_ACCESS_TOKEN_EXPIRES_IN
+}});

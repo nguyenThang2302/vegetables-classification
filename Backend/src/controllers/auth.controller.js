@@ -18,3 +18,20 @@ Controller.login = async (req, res, next) => {
     next(error);
   }
 };
+
+Controller.forgotPassword = async (req, res, next) => {
+  try {
+    const email = req.body.email;
+    return await AuthService.forgotPasswordService(email, req, res, next);
+  } catch (error) {
+    next(error);
+  }
+};
+
+Controller.resetPassword = async (req, res, next) => {
+  try {
+    return await AuthService.resetPasswordService(req, res, next);
+  } catch (error) {
+    next(error);
+  }
+}
