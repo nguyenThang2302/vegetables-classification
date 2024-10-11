@@ -24,7 +24,7 @@ export default function Profile({ navigation }: any) {
     AsyncStorage.removeItem('access_token');
     navigation.reset({
       index: 0,
-      routes: [{ name: 'StartStack' }],
+      routes: [{ name: 'Login' }],
     });
   };
 
