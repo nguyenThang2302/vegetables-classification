@@ -9,6 +9,8 @@ export type StackParamList = {
   Register: undefined;
   Dashboard: undefined;
   HistoryImage: undefined;
+  ResetPassword: undefined;
+  VerifyForgotCode: undefined;
 };
 
 export type StackProps = NativeStackScreenProps<StackParamList, keyof StackParamList>;
