@@ -14,6 +14,8 @@ import Login from '@views/LoginScreen/Login';
 import Register from '@views/RegisterScreen/Register';
 import TabNavigator from '@navigator/tab';
 import HistoryImage from '@views/HistoryImageScreen/HistoryImage';
+import ResetPassword from '@views/ResetPasswordScreen/ResetPassword';
+import VerifyForgotCode from '@views/VerifyForgotCodeScreen/VerifyForgotCode';
 
 const Stack = createNativeStackNavigator<StackParamList>();
 
@@ -69,6 +71,14 @@ export function StartStackNavigator({ navigation }: DrawerProps) {
       <Stack.Screen
         component={Register}
         name="Register"
+      />
+      <Stack.Screen
+        component={ResetPassword}
+        name="ResetPassword"
+      />
+      <Stack.Screen
+        component={VerifyForgotCode}
+        name="VerifyForgotCode"
       />
       <Stack.Screen
         component={TabNavigator}

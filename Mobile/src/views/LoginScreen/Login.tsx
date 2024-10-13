@@ -7,7 +7,6 @@ import Logo from '../../components/AuthScreen/Logo';
 import Header from '../../components/AuthScreen/Header';
 import Button from '../../components/AuthScreen/Button';
 import TextInput from '../../components/AuthScreen/TextInput';
-import BackButton from '../../components/AuthScreen/BackButton';
 import { themeAuth } from '../../theme/theme-auth';
 import { emailValidator } from '../../helpers/emailValidator';
 import { passwordValidator } from '../../helpers/passwordValidator';
@@ -59,7 +58,6 @@ export default function Login({ navigation }: any) {
 
   return (
     <Background>
-      <BackButton goBack={navigation.goBack} />
       <Logo />
       <Header>VeggieClassify Application</Header>
       <TextInput
@@ -84,7 +82,7 @@ export default function Login({ navigation }: any) {
         secureTextEntry
       />
       <View style={styles.forgotPassword}>
-        <TouchableOpacity onPress={() => navigation.navigate('ResetPasswordScreen')}>
+        <TouchableOpacity onPress={() => navigation.navigate('ResetPassword')}>
           <Text style={styles.forgot}>Forgot your password?</Text>
         </TouchableOpacity>
       </View>

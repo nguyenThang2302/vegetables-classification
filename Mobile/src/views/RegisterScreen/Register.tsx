@@ -7,7 +7,6 @@ import Logo from '../../components/AuthScreen/Logo'
 import Header from '../../components/AuthScreen/Header'
 import Button from '../../components/AuthScreen/Button'
 import TextInput from '../../components/AuthScreen/TextInput'
-import BackButton from '../../components/AuthScreen/BackButton'
 import { themeAuth } from '../../theme/theme-auth'
 import { emailValidator } from '../../helpers/emailValidator'
 import { passwordValidator } from '../../helpers/passwordValidator'
@@ -67,7 +66,6 @@ export default function Register({ navigation }: any) {
 
   return (
     <Background>
-      <BackButton goBack={navigation.goBack} />
       <Logo />
       <Header>Create Account</Header>
       <TextInput
