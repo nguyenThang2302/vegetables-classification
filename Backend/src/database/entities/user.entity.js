@@ -17,6 +17,13 @@ const User = new EntitySchema({
         password: {
             type: 'varchar'
         },
+        secret: {
+            type: 'varchar',
+        },
+        is_2fa_enabled: {
+            type: 'boolean',
+            default: false,
+        },
         created_at: {
             type: 'timestamp',
             createDate: true,

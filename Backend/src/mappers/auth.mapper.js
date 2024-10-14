@@ -18,3 +18,8 @@ AuthMapper.toResponseForgotPassword = (token) => ({ data: {
   token_type: "Bearer",
   expires_in: JWT_ACCESS_TOKEN_EXPIRES_IN
 }});
+
+AuthMapper.toResponseQR2FA = (secret, url) => ({ data: {
+  secret: secret,
+  url: url
+}});

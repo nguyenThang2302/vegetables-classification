@@ -34,4 +34,28 @@ Controller.resetPassword = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+};
+
+Controller.enableQR2FA = async (req, res, next) => {
+  try {
+    return await AuthService.enableQR2FAService(req, res, next);
+  } catch (error) {
+    next(error);
+  }
+};
+
+Controller.verifyTOTP = async (req, res, next) => {
+  try {
+    return await AuthService.verifyTOTPService(req, res, next);
+  } catch (error) {
+    next(error);
+  }
 }
+
+Controller.disable2FA = async (req, res, next) => {
+  try {
+    return await AuthService.disable2FAService(req, res, next);
+  } catch (error) {
+    next(error);
+  }
+};
