@@ -56,3 +56,10 @@ AuthValidator.resetPasswordValidator = {
     })
   })
 };
+
+AuthValidator.verifyTOTPValidator = {
+  [VALIDATE_ON.BODY]: Joi.object().keys({
+    secret: Joi.string().allow(''),
+    token: Joi.string().required()
+  })
+};

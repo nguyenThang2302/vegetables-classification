@@ -39,3 +39,7 @@ UserService.getUserByEmail = async (email) => {
 UserService.updatePassword = async (userID, password) => {
   await userRepository.update(userID, { password: password });
 };
+
+UserService.update2FA = async (userID, secret, is2FAEnable) => {
+  await userRepository.update(userID, { secret: secret, is_2fa_enabled: is2FAEnable });
+};

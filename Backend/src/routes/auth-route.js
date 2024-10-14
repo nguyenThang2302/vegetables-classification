@@ -26,6 +26,26 @@ function addRoutes(router, middleware, controllers) {
     validate([AuthValidator.resetPasswordValidator]),
     controllers.authController.resetPassword
   );
+
+  router.get(
+    '/enable-2fa',
+    middleware.authorizer,
+    controllers.authController.enableQR2FA
+  );
+
+  router.put(
+    '/disable-2fa',
+    middleware.authorizer,
+    validate([AuthValidator.verifyTOTPValidator]),
+    controllers.authController.disable2FA
+  );
+
+  router.post(
+    '/verify-totp',
+    middleware.authorizer,
+    validate([AuthValidator.verifyTOTPValidator]),
+    controllers.authController.verifyTOTP
+  )
 }
 
 function apiRouter(middleware, controllers) {
