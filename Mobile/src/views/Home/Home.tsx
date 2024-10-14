@@ -3,6 +3,7 @@ import { Text, View, StyleSheet, StatusBar } from 'react-native';
 import Background from '../../components/DashboardScreen/Background';
 import { StackProps } from '@navigator/stack';
 import Camera from '@views/CameraScreen/Camera';
+import Upload from '@views/UploadImages/Upload';
 import { colors } from '@theme';
 
 const styles = StyleSheet.create({

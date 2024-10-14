@@ -3,6 +3,7 @@ import { StyleSheet, Text, TouchableOpacity, View, Image, ActivityIndicator } fr
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { Button } from '@rneui/themed';
 import { submitImage } from 'src/services/media/submitImage';
+import * as ImagePicker from 'expo-image-picker';
 
 export default function Camera() {
   const [facing, setFacing] = useState<CameraType>('back');
@@ -18,6 +19,8 @@ export default function Camera() {
   const [isButtonCancelCamera, setIsButtonCancelCamera] = useState(false);
   const [showButtonCancelSubmit, setShowButtonCancelSubmit] = useState(false);
   const [initCapureButton, setInitCapureButton] = useState(true);
+  const [initUploadButton, setInitUploadButton] = useState(true);
+  const [isCamera, setIsCamera] = useState<boolean | null>(null);
   const cameraRef = useRef(null);
 
   if (!permission) {
@@ -41,6 +44,8 @@ export default function Camera() {
       setPhotoUri(photo.uri);
       setPhotoFile(photo);
       setShowCamera(false);
+      setIsCamera(true);
+      setInitCapureButton(false);
     }
   };
 
@@ -51,12 +56,14 @@ export default function Camera() {
     setShowCamera(true);
     setResultImage(null);
     setPhotoUri(null);
+    setInitUploadButton(false);
   };
 
   const disableCameraView = async () => {
     setInitCapureButton(true);
     setIsButtonCancelCamera(false);
     setShowButtonCapture(true);
+    setInitUploadButton(true);
   };
 
   const disableSubmitImage = async () => {
@@ -65,6 +72,7 @@ export default function Camera() {
     setPhotoUri(null);
     setShowButtonCancelSubmit(false);
     setShowButtonCapture(true);
+    setInitUploadButton(true);
   };
 
   const handleSubmitImage = async () => {
@@ -88,6 +96,30 @@ export default function Camera() {
     } catch (error) {
       console.error('Failed to submit image:', error);
       setLoading(false);
+    }
+  };
+
+  const uploadImages = async () => {
+    const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permissionResult.granted) {
+      alert("Permission to access camera roll is required!");
+      return;
+    }
+
+    const pickerResult = await ImagePicker.launchImageLibraryAsync({
+      allowsEditing: true,
+      quality: 1,
+    });
+
+    setInitUploadButton(false);
+    setInitCapureButton(false);
+    setShowButtonCapture(false);
+    setIsCamera(false);
+
+    if (!pickerResult.cancelled) {
+      setPhotoUri(pickerResult.assets[0].uri);
+      setShowButtonSubmit(true);
+      setShowButtonCancelSubmit(true);
     }
   };
 
@@ -126,6 +158,13 @@ export default function Camera() {
               </Button>
             </View>
           )}
+          {initUploadButton && (
+            <View style={styles.buttonContainer}>
+              <Button onPress={uploadImages} containerStyle={{ borderRadius: 10 }}>
+                Uploads
+              </Button>
+            </View>
+          )}
           {photoUri && (
             <>
               <Image source={{ uri: photoUri }} style={styles.imagePreview} />
@@ -137,16 +176,30 @@ export default function Camera() {
                   <Button onPress={disableSubmitImage} containerStyle={{ borderRadius: 10, marginTop: 20, marginLeft: 10 }}>
                     Cancel
                   </Button>
-                  <Button onPress={showCameraView} containerStyle={{ borderRadius: 10, marginLeft: 10, marginTop: 20 }}>
-                    Repeat
-                  </Button>
+                  {isCamera && (
+                    <Button onPress={showCameraView} containerStyle={{ borderRadius: 10, marginLeft: 10, marginTop: 20 }}>
+                      Repeat
+                    </Button>
+                  )}
+                  {!isCamera && (
+                    <Button onPress={uploadImages} containerStyle={{ borderRadius: 10, marginLeft: 10, marginTop: 20 }}>
+                      Repeat
+                    </Button>
+                  )}
                 </View>
               )}
               {showButtonCapture && (
                 <View style={styles.buttonContainer}>
-                  <Button onPress={showCameraView} containerStyle={{ borderRadius: 10, marginTop: 20 }}>
-                    Capture
+                  {isCamera && (
+                    <Button onPress={showCameraView} containerStyle={{ borderRadius: 10, marginTop: 20 }}>
+                      Capture
+                    </Button>
+                  )}
+                  {!isCamera && (
+                    <Button onPress={uploadImages} containerStyle={{ borderRadius: 10, marginTop: 20 }}>
+                    Uploads
                   </Button>
+                  )}
                   <Button onPress={disableSubmitImage} containerStyle={{ borderRadius: 10, marginTop: 20, marginLeft: 10 }}>
                     Cancel
                   </Button>
