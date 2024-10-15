@@ -24,3 +24,8 @@ AuthMapper.toResponseQR2FA = (secret, url) => ({ data: {
   secret: secret,
   url: url
 }});
+
+AuthMapper.toResponseChangePassword = (user) => ({ data: {
+  id: user.id,
+  email: user.email
+}});

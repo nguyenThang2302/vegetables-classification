@@ -15,6 +15,13 @@ function addRoutes(router, middleware, controllers) {
     controllers.authController.login
   );
 
+  router.put(
+    '/change-password',
+    middleware.authorizer,
+    validate([AuthValidator.changePasswordValidator]),
+    controllers.authController.changePassword
+  );
+
   router.post(
     '/forgot-password',
     validate([AuthValidator.forgotPasswordValidator]),

@@ -39,10 +39,7 @@ export default function Profile({ navigation }: any) {
 
   const handleLogout = () => {
     AsyncStorage.removeItem('access_token');
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'Login' }],
-    });
+    navigation.replace('Login');
   };
 
   const enable2FA = () => {

@@ -59,3 +59,11 @@ Controller.disable2FA = async (req, res, next) => {
     next(error);
   }
 };
+
+Controller.changePassword = async (req, res, next) => {
+  try {
+    return await AuthService.changePasswordService(req, res, next);
+  } catch (error) {
+    next(error);
+  }
+}

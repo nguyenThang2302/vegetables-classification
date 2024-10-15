@@ -63,3 +63,22 @@ AuthValidator.verifyTOTPValidator = {
     token: Joi.string().required()
   })
 };
+
+AuthValidator.changePasswordValidator = {
+  [VALIDATE_ON.BODY]: Joi.object().keys({
+    current_password: Joi.string().required(),
+    new_password: Joi.string()
+    .min(5)
+    .pattern(new RegExp('(?=.*[A-Z])(?=.*[!@#$%^&*])'))
+    .required()
+    .messages({
+      'string.pattern.base': 'Password must contain at least one uppercase letter and one special character.',
+    }),
+    new_repeat_password: Joi.string()
+    .required()
+    .valid(Joi.ref('new_password'))
+    .messages({
+      'any.only': 'New password and repeat password must match.',
+    })
+  })
+};

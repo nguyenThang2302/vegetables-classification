@@ -7,6 +7,7 @@ const { BadRequestError } = require('../errors');
 const { AuthMapper } = require('../mappers/index');
 const speakeasy = require('speakeasy');
 const QRCode = require('qrcode');
+const { auth } = require('../config/nodemailer.config');
 
 const { JWT_SECRET_KEY, JWT_ACCESS_TOKEN_EXPIRES_IN} = process.env;
 
@@ -171,3 +172,20 @@ AuthService.verifyTOTPService = async (req, res, next) => {
     next(error);
   }
 };
+
+AuthService.changePasswordService = async (req, res, next) => {
+  try {
+    const user = req.user;
+    const { current_password, new_password } = req.body;
+    const userInfo = await getUserInfo(user.id);
+    const isMatch = await bcrypt.compare(current_password, userInfo.password);
+    if (!isMatch) {
+      throw new BadRequestError(t('AU-002'));
+    }
+    const hashedPassword = await bcrypt.hash(new_password, 10);
+    await updatePassword(user.id, hashedPassword);
+    return ok(req, res, AuthMapper.toResponseChangePassword(userInfo));
+  } catch (error) {
+    next(error);
+  }
+}
