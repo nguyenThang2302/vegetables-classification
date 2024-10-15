@@ -107,7 +107,7 @@ export default function Camera() {
     }
 
     const pickerResult = await ImagePicker.launchImageLibraryAsync({
-      allowsEditing: true,
+      allowsEditing: false,
       quality: 1,
     });
 
