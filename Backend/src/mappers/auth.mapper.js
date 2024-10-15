@@ -7,7 +7,8 @@ AuthMapper.toInfoRegister = (data) => ({
   email: data.email
 });
 
-AuthMapper.toInfoLogin = (access_token) => ({ data: {
+AuthMapper.toInfoLogin = (access_token, isEnable2FA) => ({ data: {
+  is_enable_2fa: isEnable2FA,
   access_token: access_token,
   token_type: "Bearer",
   expires_in: JWT_ACCESS_TOKEN_EXPIRES_IN

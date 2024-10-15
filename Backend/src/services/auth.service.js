@@ -43,7 +43,7 @@ AuthService.loginService = async (user, req, res, next) => {
     };
 
     const accessToken = await jwt.sign(payload, JWT_SECRET_KEY, { expiresIn: parseInt(JWT_ACCESS_TOKEN_EXPIRES_IN) });
-    return ok(req, res, AuthMapper.toInfoLogin(accessToken));
+    return ok(req, res, AuthMapper.toInfoLogin(accessToken, userData.is_2fa_enabled));
   } catch (error) {
     next(error);
   }
@@ -105,8 +105,6 @@ AuthService.enableQR2FAService = async (req, res, next) => {
     const secret = speakeasy.generateSecret({ length: 20 });
     const qrCodeUrl = await QRCode.toDataURL(secret.otpauth_url);
 
-    await update2FA(user.id, '', true);
-
     return ok(req, res, AuthMapper.toResponseQR2FA(secret.base32, qrCodeUrl));
   } catch (error) {
     next(error);
@@ -144,10 +142,17 @@ AuthService.verifyTOTPService = async (req, res, next) => {
     const userInfo = await getUserInfo(user.id);
     const secretSaved = userInfo.secret;
     let secret;
+    let payload;
+    let accessToken;
     if (secretSaved === '') {
       secret = req.body.secret;
     } else {
       secret = secretSaved;
+      payload = {
+        id: userInfo.id,
+        email: userInfo.email
+      };
+      accessToken = await jwt.sign(payload, JWT_SECRET_KEY, { expiresIn: parseInt(JWT_ACCESS_TOKEN_EXPIRES_IN) });
     }
     const { token } = req.body;
 
@@ -158,10 +163,10 @@ AuthService.verifyTOTPService = async (req, res, next) => {
     });
 
     if (verified) {
-      await update2FA(user.id, secret);
+      await update2FA(user.id, secret, true);
     }
 
-    return ok(req, res, { data: { is_verified: verified } });
+    return ok(req, res, { data: { is_verified: verified, access_token: accessToken ? accessToken : null } });
   } catch (error) {
     next(error);
   }

@@ -35,16 +35,24 @@ export default function Login({ navigation }: any) {
     handleLogin(requestBody)
       .then(response => {
         if (!_.has(response, 'error')) {
-          Toast.show({
-            type: 'success',
-            text1: '',
-            text2: 'Login is successfully'
-          });
-          AsyncStorage.setItem('access_token', response.data.data.access_token);
-          navigation.reset({
-            index: 0,
-            routes: [{ name: 'Dashboard' }],
-          });
+          if (response.data.data.is_enable_2fa) {
+            AsyncStorage.setItem('temp_access_token', response.data.data.access_token);
+            navigation.reset({
+              index: 0,
+              routes: [{ name: 'Verify2FA' }],
+            });
+          } else {
+            Toast.show({
+              type: 'success',
+              text1: '',
+              text2: 'Login is successfully'
+            });
+            AsyncStorage.setItem('access_token', response.data.data.access_token);
+            navigation.reset({
+              index: 0,
+              routes: [{ name: 'Dashboard' }],
+            });
+          }
         }
       })
       .catch(error => {

@@ -11,6 +11,7 @@ export type StackParamList = {
   HistoryImage: undefined;
   ResetPassword: undefined;
   VerifyForgotCode: undefined;
+  Verify2FA: undefined;
 };
 
 export type StackProps = NativeStackScreenProps<StackParamList, keyof StackParamList>;
