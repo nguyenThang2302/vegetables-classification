@@ -29,6 +29,7 @@ export default function TabNavigator() {
         tabBarInactiveBackgroundColor: colors.white,
         tabBarActiveTintColor: colors.lightPurple,
         tabBarActiveBackgroundColor: colors.white,
+        unmountOnBlur: true
       })}>
       <Tab.Screen name="HomeTab" component={HomeStackNavigator} options={{ title: 'Home' }} />
       <Tab.Screen name="HistoryImageTab" component={HistoryImageNavigatior} options={{ title: 'History' }} />

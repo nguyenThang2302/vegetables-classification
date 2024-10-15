@@ -5,6 +5,7 @@ import { Text } from 'react-native-paper';
 import Background from '../../components/DashboardScreen/Background';
 import { fetchHistoryImages } from 'src/services/media/getHistoryImageList';
 const { width } = Dimensions.get('window');
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function HistoryImage({ navigation }: any) {
   const [historyData, setHistoryData] = useState([]);
@@ -13,9 +14,11 @@ export default function HistoryImage({ navigation }: any) {
   const [page, setPage] = useState(1);
   const isStop = useRef<boolean>(false);
 
-  useEffect(() => {
-    loadImages(page, false);
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      loadImages(1, false);
+    }, [])
+  );
 
   const loadImages = async (page: number, loadMore = true) => {
     setLoading(true);

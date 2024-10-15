@@ -78,10 +78,11 @@ export default function Camera() {
   const handleSubmitImage = async () => {
     setLoading(true);
     const formData = new FormData();
+    const unixTimestamp = Date.now();
     if (photoFile) {
       formData.append('image', {
         uri: photoUri,
-        name: 'photo.jpg',
+        name: `${unixTimestamp}`,
         type: 'image/jpeg',
       });
     }
@@ -118,6 +119,7 @@ export default function Camera() {
 
     if (!pickerResult.cancelled) {
       setPhotoUri(pickerResult.assets[0].uri);
+      setPhotoFile(pickerResult.assets[0]);
       setShowButtonSubmit(true);
       setShowButtonCancelSubmit(true);
     }

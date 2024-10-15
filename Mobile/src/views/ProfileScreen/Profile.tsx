@@ -87,13 +87,21 @@ export default function Profile({ navigation }: any) {
       .then((response) => {
         if (response.data) {
           console.log(response.data.data);
-          setIs2FAEnabled(true);
-          setData2FA(null);
-          Toast.show({
-            type: 'success',
-            text1: '',
-            text2: '2FA is enabled'
-          });
+          if (response.data.data.is_verified) {
+            setIs2FAEnabled(true);
+            setData2FA(null);
+            Toast.show({
+              type: 'success',
+              text1: '',
+              text2: '2FA is enabled'
+            });
+          } else {
+            Toast.show({
+              type: 'error',
+              text1: '',
+              text2: 'Token is valid'
+            });
+          }
         }
       })
       .catch((error) => {
@@ -198,7 +206,7 @@ export default function Profile({ navigation }: any) {
                 </View>
               </View>
             )}
-            { isShowInput2FA && (
+            {isShowInput2FA && (
               <View style={{ justifyContent: 'center', alignItems: 'center' }}>
                 <View>
                   <TextInput
