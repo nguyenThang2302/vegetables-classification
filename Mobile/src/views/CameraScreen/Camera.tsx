@@ -118,6 +118,7 @@ export default function Camera() {
 
     if (!pickerResult.cancelled) {
       setPhotoUri(pickerResult.assets[0].uri);
+      setPhotoFile(pickerResult.assets[0]);
       setShowButtonSubmit(true);
       setShowButtonCancelSubmit(true);
     }
