@@ -1,3 +1,4 @@
+import google.generativeai as genai
 from fastapi import FastAPI, HTTPException, UploadFile, File
 from fastapi.responses import JSONResponse
 from PIL import Image
@@ -5,9 +6,16 @@ import numpy as np
 import tensorflow as tf
 import io
 
+genai.configure(api_key="AIzaSyDexsLJm3JECwolJVQULnRmSi1-y_BK978")
+model = genai.GenerativeModel("gemini-1.5-flash")
+
 app = FastAPI()
 
 class_names = ['Bean', 'Bitter_Gourd', 'Bottle_Gourd', 'Brinjal', 'Broccoli', 'Cabbage', 'Capsicum', 'Carrot', 'Cauliflower', 'Cucumber', 'Papaya', 'Potato', 'Pumpkin', 'Radish', 'Tomato']
+
+def get_vegetable_description(vegetable_name):
+    response = model.generate_content(f"Write a description of {vegetable_name}. Please return json response with format desciption:[{{ title: Title, contents: []}}].")
+    return response.text
 
 def preprocess_image(image: Image.Image) -> np.ndarray:
     image = image.resize((224, 224))  # Resize image to fit the model's input
@@ -29,6 +37,7 @@ def model_prediction(image: np.ndarray) -> dict:
     return {
         "predicted_class": pred_class,
         "confidence": float(pred_confidence),  # Convert to float for JSON serialization
+        "description": get_vegetable_description(pred_class)
     }
 
 @app.post("/predict")

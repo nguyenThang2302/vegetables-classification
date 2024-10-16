@@ -9,7 +9,7 @@ Controller.uploadImages = async (req, res, next) => {
   try {
     addImageToQueue(req, res, next);
 
-    return ok(req, res, MediaMapper.toUploadImageResponse(req['prediction'].predicted_class, req['prediction'].confidence));
+    return ok(req, res, MediaMapper.toUploadImageResponse(req['prediction'].predicted_class, req['prediction'].confidence, req['description']));
   } catch (error) {
     return next(error);
   }
