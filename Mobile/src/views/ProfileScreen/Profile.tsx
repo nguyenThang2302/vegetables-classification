@@ -153,6 +153,10 @@ export default function Profile({ navigation }: any) {
       }).finally(() => setLoading(false));
   };
 
+  const goChagePasswordPage = () => {
+    navigation.replace('ChangePassword');
+  };
+
   return (
     <Background>
       {loading ? (
@@ -176,6 +180,16 @@ export default function Profile({ navigation }: any) {
                 onValueChange={enable2FA}
                 value={is2FAEnabled}
               />
+            </View>
+            <View style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+              <Text style={styles.label}>Password: </Text>
+              <Button
+                mode="contained"
+                style={{ width: 80, height: 50}}
+                onPress={goChagePasswordPage}
+              >
+                Edit
+              </Button>
             </View>
             {data2FA && (
               <View style={{ justifyContent: 'center', alignItems: 'center' }}>

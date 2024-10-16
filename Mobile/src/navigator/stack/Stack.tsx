@@ -7,7 +7,6 @@ import { colors } from '@theme';
 
 // views
 import Home from '@views/Home';
-import Details from '@views/Details';
 import Profile from '@views/ProfileScreen/Profile';
 import Start from '@views/StartScreen/Start';
 import Login from '@views/LoginScreen/Login';
@@ -17,6 +16,7 @@ import HistoryImage from '@views/HistoryImageScreen/HistoryImage';
 import ResetPassword from '@views/ResetPasswordScreen/ResetPassword';
 import VerifyForgotCode from '@views/VerifyForgotCodeScreen/VerifyForgotCode';
 import Verify2FA from '@views/Verify2FAScreen/Verify2FA';
+import ChangePassword from '@views/ChangePasswordScreen/ChangePassword';
 
 const Stack = createNativeStackNavigator<StackParamList>();
 
@@ -108,6 +108,10 @@ export function ProfileStackNavigator({ navigation }: DrawerProps) {
       <Stack.Screen
         component={Start}
         name="StartStack"
+      />
+      <Stack.Screen
+        component={ChangePassword}
+        name="ChangePassword"
       />
     </Stack.Navigator>
   );
