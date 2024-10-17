@@ -1,13 +1,19 @@
 import React, { useState, useRef } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View, Image, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, Image, ActivityIndicator, ScrollView } from 'react-native';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import { Button } from '@rneui/themed';
 import { submitImage } from 'src/services/media/submitImage';
 import * as ImagePicker from 'expo-image-picker';
 
+type VegetableDesctions = {
+  title: string;
+  contents: string[];
+};
+
 export default function Camera() {
   const [facing, setFacing] = useState<CameraType>('back');
   const [permission, requestPermission] = useCameraPermissions();
+  const [vegetableDescriptions, setVegetableDescriptions] = useState<VegetableDesctions[] | null>(null);
   const [photoUri, setPhotoUri] = useState<string | null>(null);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [confidence, setConfidence] = useState<number | null>(null);
@@ -89,6 +95,7 @@ export default function Camera() {
 
     try {
       const response = await submitImage(formData);
+      setVegetableDescriptions(response.data.description);
       setShowButtonCapture(true);
       setShowButtonSubmit(false);
       setLoading(false);
@@ -199,8 +206,8 @@ export default function Camera() {
                   )}
                   {!isCamera && (
                     <Button onPress={uploadImages} containerStyle={{ borderRadius: 10, marginTop: 20 }}>
-                    Uploads
-                  </Button>
+                      Uploads
+                    </Button>
                   )}
                   <Button onPress={disableSubmitImage} containerStyle={{ borderRadius: 10, marginTop: 20, marginLeft: 10 }}>
                     Cancel
@@ -209,8 +216,34 @@ export default function Camera() {
               )}
             </>
           )}
-          {resultImage && (
-            <Text style={styles.resultText}>{resultImage} {(confidence ? `: ${confidence}%` : '')}</Text>
+          {resultImage && vegetableDescriptions && (
+            <View>
+              <Text style={styles.resultText}>{resultImage} {(confidence ? `: ${confidence * 100}%` : '')}</Text>
+              <Text style={styles.header}>Descriptions {resultImage}</Text>
+              <ScrollView>
+                {vegetableDescriptions.map((item, index) => (
+                  <View key={index} style={{
+                    marginBottom: 20,
+                    paddingBottom: 0
+                  }}>
+                    <Text style={{
+                      fontSize: 18,
+                      fontWeight: 'bold',
+                    }}>
+                      {index + 1}. {item.title}
+                    </Text>
+                    {item.contents.map((line, lineIndex) => (
+                      <Text key={lineIndex} style={{
+                        fontSize: 16,
+                        marginLeft: 10,
+                      }}>
+                        {'\u2794'} {line} {/* Using the right arrow Unicode character */}
+                      </Text>
+                    ))}
+                  </View>
+                ))}
+              </ScrollView>
+            </View>
           )}
         </>
       )}
@@ -220,7 +253,8 @@ export default function Camera() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // flex: 1,
+    height:'54%',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -262,6 +296,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     marginTop: 20,
     color: '#000',
+    textAlign: 'center',
   },
   captureButton: {
     padding: 10,
@@ -281,4 +316,10 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
   },
+  header: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    textAlign: 'center',
+  }
 });
