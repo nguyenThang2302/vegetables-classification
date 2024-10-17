@@ -1,10 +1,15 @@
 const { MediaService } = require('../services/index');
+const { addImageToQueue } = require('../config/cloudinary.config');
+const { MediaMapper } = require('../mappers/index');
+const {ok} = require('../helpers/response.helper');
 
 const Controller = module.exports;
 
 Controller.uploadImages = async (req, res, next) => {
   try {
-    await MediaService.insertImage(req, res, next);
+    addImageToQueue(req, res, next);
+
+    return ok(req, res, MediaMapper.toUploadImageResponse(req['prediction'].predicted_class, req['prediction'].confidence, req['description']));
   } catch (error) {
     return next(error);
   }

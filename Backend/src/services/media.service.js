@@ -9,26 +9,11 @@ const MediaService = module.exports;
 const imageRepository = AppDataSource.getRepository(Image);
 const userImageRepository = AppDataSource.getRepository(UserImage);
 
-MediaService.insertImage = async (req, res, next) => {
+MediaService.insertImage = async (userID, urlImage, result) => {
   try {
-    const urlImage = req.file.path;
-    const userID = req.user['id'];
-
-    const requestBody = {
-      image_url: urlImage
-    };
-
-    const response = await fetch(`${config.base_url_model}/predict`, {
-      method: 'POST',
-      headers: {
-          'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(requestBody)
-    });
-    const data = await response.json();
 
     const imageData = imageRepository.create({
-      name: data.prediction.predicted_class,
+      name: result,
       url: urlImage
     });
     await imageRepository.save(imageData);
@@ -38,8 +23,6 @@ MediaService.insertImage = async (req, res, next) => {
       image_id: imageData.id
     });
     await userImageRepository.save(userImageData);
-
-    return ok(req, res, MediaMapper.toImageUrlResponse(imageData.name, urlImage));
   } catch (error) {
     return next(error);
   }
@@ -47,11 +30,14 @@ MediaService.insertImage = async (req, res, next) => {
 
 MediaService.getImagesHistory = async (req, res, next) => {
   try {
+    const { limit = 10, offset = 1 } = req.query;
     const userID = req.user['id'];
     const images = await imageRepository.createQueryBuilder('images')
                       .innerJoin('images.user_images', 'user_images', 'user_images.user_id = :user_id', { user_id: userID})
                       .select()
                       .orderBy('images.created_at', 'DESC')
+                      .limit(limit)
+                      .offset(limit * (offset - 1))
                       .getMany();
     return ok(req, res, MediaMapper.toImagesHistoryResponse(images));
   } catch (error) {

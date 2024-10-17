@@ -1,13 +1,35 @@
 const express = require('express');
-const { storage } = require('../config/cloudinary.config');
 const multer = require('multer');
+const storage = multer.memoryStorage();
 const upload = multer({ storage });
+const config = require('../config/config');
+const { Blob } = require('blob-polyfill');
 
 function addRoutes(router, middleware, controllers) {
   router.post(
     '/uploads/image',
     middleware.authorizer,
     upload.single('image'),
+    async (req, res, next) => {
+      const fileBlob = new Blob([req.file.buffer], { type: req.file.mimetype });
+      const formData = new FormData();
+      formData.append('image', fileBlob, req.file.originalname);
+      const response = await fetch(`${config.base_url_model}/predict`, {
+        method: 'POST',
+        body: formData
+      });
+      const data = await response.json();
+      if (data.prediction.description !== null) {
+        const jsonString = data.prediction.description
+        .replace(/```json\n/, '')
+        .replace(/```$/, '')
+        .trim();
+        const jsonObject = JSON.parse(jsonString);
+        req['description'] = jsonObject;
+      }
+      req['prediction'] = data.prediction;
+      next();
+    },
     controllers.mediaController.uploadImages
   );
 

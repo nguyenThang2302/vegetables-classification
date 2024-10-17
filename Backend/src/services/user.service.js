@@ -31,3 +31,15 @@ UserService.validateUser = async (user) => {
 UserService.getUserInfo = async (userID) => {
   return await userRepository.findOneBy({ id: userID });
 };
+
+UserService.getUserByEmail = async (email) => {
+  return await userRepository.findOneBy({ email: email });
+};
+
+UserService.updatePassword = async (userID, password) => {
+  await userRepository.update(userID, { password: password });
+};
+
+UserService.update2FA = async (userID, secret, is2FAEnable) => {
+  await userRepository.update(userID, { secret: secret, is_2fa_enabled: is2FAEnable });
+};
