@@ -19,13 +19,15 @@ function addRoutes(router, middleware, controllers) {
         body: formData
       });
       const data = await response.json();
-      const jsonString = data.prediction.description
+      if (data.prediction.description !== null) {
+        const jsonString = data.prediction.description
         .replace(/```json\n/, '')
         .replace(/```$/, '')
         .trim();
-      const jsonObject = JSON.parse(jsonString);
+        const jsonObject = JSON.parse(jsonString);
+        req['description'] = jsonObject;
+      }
       req['prediction'] = data.prediction;
-      req['description'] = jsonObject;
       next();
     },
     controllers.mediaController.uploadImages
