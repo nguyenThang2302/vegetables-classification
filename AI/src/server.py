@@ -33,6 +33,7 @@ def model_prediction(image: np.ndarray) -> dict:
     if float(pred_confidence) < 0.9:
         return {
             "predicted_class": "Unknown",
+            "description": None
         }
     return {
         "predicted_class": pred_class,
