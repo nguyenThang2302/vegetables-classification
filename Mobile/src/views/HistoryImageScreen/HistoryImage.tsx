@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { StyleSheet, View, FlatList, Image, Dimensions, ActivityIndicator } from 'react-native';
+import { StyleSheet, View, FlatList, Image, Dimensions, ActivityIndicator, TouchableOpacity, Modal, Button } from 'react-native';
 import * as _ from 'lodash';
 import { Text } from 'react-native-paper';
 import Background from '../../components/DashboardScreen/Background';
@@ -12,6 +12,8 @@ export default function HistoryImage({ navigation }: any) {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [page, setPage] = useState(1);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<any>(null);
   const isStop = useRef<boolean>(false);
 
   useFocusEffect(
@@ -53,14 +55,21 @@ export default function HistoryImage({ navigation }: any) {
     loadImages(1, false);
   };
 
+  const handleItemPress = (item: any) => {
+    setSelectedItem(item);
+    setModalVisible(true);
+  };
+
   const renderItem = ({ item }: { item: any }) => (
-    <View style={styles.row}>
-      <Image source={{ uri: item.url }} style={styles.image} />
-      <View style={styles.textContainer}>
-        <Text style={styles.imageName}>{item.name}</Text>
-        <Text style={styles.createdAt}>{new Date(item.created_at).toLocaleString()}</Text>
+    <TouchableOpacity onPress={() => handleItemPress(item)}>
+      <View style={styles.row}>
+        <Image source={{ uri: item.url }} style={styles.image} />
+        <View style={styles.textContainer}>
+          <Text style={styles.imageName}>{item.name}</Text>
+          <Text style={styles.createdAt}>{new Date(item.created_at).toLocaleString()}</Text>
+        </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 
   return (
@@ -78,6 +87,27 @@ export default function HistoryImage({ navigation }: any) {
           onRefresh={handleRefresh}
         />
       )}
+
+      {/* Modal hiển thị khi item được nhấn */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)} // Đóng modal khi nhấn nút back trên Android
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            {selectedItem && (
+              <>
+                <Image source={{ uri: selectedItem.url }} style={styles.modalImage} />
+                <Text style={styles.modalTitle}>{selectedItem.name}</Text>
+                <Text style={styles.modalText}>Created at: {new Date(selectedItem.created_at).toLocaleString()}</Text>
+                <Button title="Close" onPress={() => setModalVisible(false)} />
+              </>
+            )}
+          </View>
+        </View>
+      </Modal>
     </Background>
   );
 }
@@ -107,5 +137,32 @@ const styles = StyleSheet.create({
   createdAt: {
     fontSize: 14,
     color: '#666',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    width: '80%',
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  modalImage: {
+    width: 200,
+    height: 150,
+    marginBottom: 20,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  modalText: {
+    fontSize: 16,
+    marginBottom: 20,
   },
 });

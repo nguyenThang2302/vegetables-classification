@@ -216,33 +216,37 @@ export default function Camera() {
               )}
             </>
           )}
-          {resultImage && vegetableDescriptions && (
+          {resultImage && (
             <View>
               <Text style={styles.resultText}>{resultImage} {(confidence ? `: ${confidence * 100}%` : '')}</Text>
-              <Text style={styles.header}>Descriptions {resultImage}</Text>
-              <ScrollView>
-                {vegetableDescriptions.map((item, index) => (
-                  <View key={index} style={{
-                    marginBottom: 20,
-                    paddingBottom: 0
-                  }}>
-                    <Text style={{
-                      fontSize: 18,
-                      fontWeight: 'bold',
-                    }}>
-                      {index + 1}. {item.title}
-                    </Text>
-                    {item.contents.map((line, lineIndex) => (
-                      <Text key={lineIndex} style={{
-                        fontSize: 16,
-                        marginLeft: 10,
+              {vegetableDescriptions && (
+                <View>
+                  <Text style={styles.header}>Descriptions {resultImage}</Text>
+                  <ScrollView>
+                    {vegetableDescriptions.map((item, index) => (
+                      <View key={index} style={{
+                        marginBottom: 20,
+                        paddingBottom: 0
                       }}>
-                        {'\u2794'} {line} {/* Using the right arrow Unicode character */}
-                      </Text>
+                        <Text style={{
+                          fontSize: 18,
+                          fontWeight: 'bold',
+                        }}>
+                          {index + 1}. {item.title}
+                        </Text>
+                        {item.contents.map((line, lineIndex) => (
+                          <Text key={lineIndex} style={{
+                            fontSize: 16,
+                            marginLeft: 10,
+                          }}>
+                            {'\u2794'} {line} {/* Using the right arrow Unicode character */}
+                          </Text>
+                        ))}
+                      </View>
                     ))}
-                  </View>
-                ))}
-              </ScrollView>
+                  </ScrollView>
+                </View>
+              )}
             </View>
           )}
         </>
@@ -254,7 +258,7 @@ export default function Camera() {
 const styles = StyleSheet.create({
   container: {
     // flex: 1,
-    height:'54%',
+    height: '54%',
     justifyContent: 'center',
     alignItems: 'center',
   },
