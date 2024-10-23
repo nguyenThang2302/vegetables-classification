@@ -4,7 +4,9 @@ services:
   app:
     build:
       context: .
-      dockerfile: docker/Dockerfile
+      dockerfile: Dockerfile
+    env_file:
+      - .env
     ports:
       - 8081:8081
       - 9229:9229
@@ -15,19 +17,8 @@ services:
     working_dir: /app
     volumes:
       - ./:/app
-    entrypoint: npm start
-
-  masterdb:
-    image: mysql:8
-    ports:
-      - 3306:3306
-    environment:
-      MYSQL_USER: dbuser
-      MYSQL_PASSWORD: dbpassword
-      MYSQL_ROOT_PASSWORD: r00t
-      MYSQL_DATABASE: edsdk_emps_main
-    networks:
-      - default
+      - /app/node_modules
+    entrypoint: yarn start
 
 networks:
   default:
