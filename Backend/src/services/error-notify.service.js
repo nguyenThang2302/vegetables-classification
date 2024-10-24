@@ -81,8 +81,13 @@ ErrorNotifyService.sendErrorToSlack = (error, context) => {
  * @return {Promise}
  */
 ErrorNotifyService.sendErrorToSentry = (error, context) => {
+  const statusCode = _.get(error.output, 'httpStatusCode', 500);
   // Notify
   if (error.name === InternalServerError.name) {
+    SentryUtil.captureException(error, context);
+  }
+
+  if (statusCode === 500) {
     SentryUtil.captureException(error, context);
   }
 
