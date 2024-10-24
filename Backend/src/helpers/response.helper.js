@@ -88,6 +88,10 @@ ResponseHelper.error = (req, res, error) => {
   errorResponse(req, res, {
     message: statusCode === 500 ? t('internal_server_error') : error.message,
     code: _.get(error.output, 'code', 'INTERNAL_SERVER_ERROR'),
-    errors: _.get(error.output, 'errors', [])
+    errors: _.get(error.output, 'errors', [
+      {
+        message: error.message
+      }
+    ])
   }, statusCode);
 };

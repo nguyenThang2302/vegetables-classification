@@ -14,20 +14,24 @@ function addRoutes(router, middleware, controllers) {
       const fileBlob = new Blob([req.file.buffer], { type: req.file.mimetype });
       const formData = new FormData();
       formData.append('image', fileBlob, req.file.originalname);
-      const response = await fetch(`${config.base_url_model}/predict`, {
-        method: 'POST',
-        body: formData
-      });
-      const data = await response.json();
-      if (data.prediction.description !== null) {
-        const jsonString = data.prediction.description
-        .replace(/```json\n/, '')
-        .replace(/```$/, '')
-        .trim();
-        const jsonObject = JSON.parse(jsonString);
-        req['description'] = jsonObject;
+      try {
+        const response = await fetch(`${config.base_url_model}/predict`, {
+          method: 'POST',
+          body: formData
+        });
+        const data = await response.json();
+        if (data.prediction.description !== null) {
+          const jsonString = data.prediction.description
+          .replace(/```json\n/, '')
+          .replace(/```$/, '')
+          .trim();
+          const jsonObject = JSON.parse(jsonString);
+          req['description'] = jsonObject;
+        }
+        req['prediction'] = data.prediction;
+      } catch (error) {
+        return next(error);
       }
-      req['prediction'] = data.prediction;
       next();
     },
     controllers.mediaController.uploadImages
