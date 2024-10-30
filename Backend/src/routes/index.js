@@ -14,12 +14,14 @@ const topRoutes = require('./top-route');
 const authRoutes = require('./auth-route');
 const userRoutes = require('./user-route');
 const mediaRoutes = require('./media-route');
+const chatRoutes = require('./chat-route');
 
 function addRoutes(app, router, middleware) {
   topRoutes(router, middleware, controllers);
   authRoutes(router, middleware, controllers);
   userRoutes(router, middleware, controllers);
   mediaRoutes(router, middleware, controllers);
+  chatRoutes(router, middleware, controllers);
 }
 
 module.exports = async (app, middleware) => {
