@@ -1,28 +1,21 @@
 const { EntitySchema } = require('typeorm');
 
-const User = new EntitySchema({
-    name: 'users',
+const ChatContent = new EntitySchema({
+    name: 'chat_contents',
     columns: {
         id: {
             type: 'int',
             primary: true,
             generated: true,
         },
-        name: {
+        chat_id: {
+            type: 'int',
+        },
+        user_message: {
             type: 'varchar',
         },
-        email: {
+        bot_message: {
             type: 'varchar',
-        },
-        password: {
-            type: 'varchar'
-        },
-        secret: {
-            type: 'varchar',
-        },
-        is_2fa_enabled: {
-            type: 'boolean',
-            default: false,
         },
         created_at: {
             type: 'timestamp',
@@ -38,17 +31,13 @@ const User = new EntitySchema({
         }
     },
     relations: {
-      user_images: {
-          type: 'one-to-many',
-          target: 'user_images',
-          inverseSide: 'user',
-      },
-      user_chats: {
-          type: 'one-to-many',
-          target: 'user_chats',
-          inverseSide: 'user',
-      }
+        chat: {
+            type: 'many-to-one',
+            target: 'chats',
+            joinColumn: { name: 'chat_id' },
+            inverseSide: 'chat_contents',
+        }
     }
 });
 
-module.exports = User;
+module.exports = ChatContent;

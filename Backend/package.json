@@ -42,6 +42,7 @@
     "supertest": "6.3.1"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.21.0",
     "@hapi/joi": "^17.1.1",
     "@sentry/node": "^7.37.2",
     "@slack/webhook": "6.1.0",
