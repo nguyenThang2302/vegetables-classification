@@ -51,8 +51,13 @@ ChatBotService.getListChatBot = async (req, res, next) => {
 };
 
 ChatBotService.getChatBotDetails = async (req, res, next) => {
+  const { limit = 10, offset = 1 } = req.query;
   const chatId = req.params.chat_id;
   const user = req.user;
-  const chatDetails = await chatRepository.getChatBotDetails(chatId, user.id);
+  const chatDetails = await chatRepository.getChatBotDetails(chatId, user.id, limit, offset);
+  if (_.isNull(chatDetails)) {
+    return ok(req, res, toResponseChatBotDetails(null));
+  }
+  chatDetails.chat_contents.sort((a, b) => a.id - b.id);
   return ok(req, res, toResponseChatBotDetails(chatDetails));
 };
