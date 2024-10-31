@@ -35,7 +35,7 @@ ChatRepository.getListChatBot = async (userId) => {
   return data;
 };
 
-ChatRepository.getChatBotDetails = async (chatId, userId) => {
+ChatRepository.getChatBotDetails = async (chatId, userId, limit, offset) => {
   const data = await chatRepository.createQueryBuilder('chats')
     .innerJoin('chats.chat_contents', 'chat_contents', 'chat_contents.chat_id = :chat_id', { chat_id: chatId })
     .innerJoin('chats.user_chats', 'user_chats', 'user_chats.user_id = :user_id', { user_id: userId })
@@ -47,6 +47,8 @@ ChatRepository.getChatBotDetails = async (chatId, userId) => {
       'chat_contents.created_at',
     ])
     .orderBy('chat_contents.created_at', 'ASC')
+    .limit(limit)
+    .offset(limit * (offset - 1))
     .getOne();
   return data;
 };
