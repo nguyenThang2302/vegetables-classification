@@ -13,6 +13,8 @@ export type StackParamList = {
   VerifyForgotCode: undefined;
   Verify2FA: undefined;
   ChangePassword: undefined;
+  ChatBot: undefined;
+  ChatBotList: undefined;
 };
 
 export type StackProps = NativeStackScreenProps<StackParamList, keyof StackParamList>;

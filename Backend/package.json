@@ -1,6 +1,6 @@
 {
   "name": "pbl6-api",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "licenses": [
     {
       "type": "UNLICENSED"
@@ -42,12 +42,14 @@
     "supertest": "6.3.1"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.21.0",
     "@hapi/joi": "^17.1.1",
     "@sentry/node": "^7.37.2",
     "@slack/webhook": "6.1.0",
     "async": "3.1.0",
     "base32.js": "^0.1.0",
     "bcrypt": "^5.1.1",
+    "bcryptjs": "^2.4.3",
     "blob-polyfill": "^9.0.20240710",
     "body-parser": "1.17.1",
     "bull": "^4.16.3",

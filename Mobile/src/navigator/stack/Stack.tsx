@@ -17,6 +17,8 @@ import ResetPassword from '@views/ResetPasswordScreen/ResetPassword';
 import VerifyForgotCode from '@views/VerifyForgotCodeScreen/VerifyForgotCode';
 import Verify2FA from '@views/Verify2FAScreen/Verify2FA';
 import ChangePassword from '@views/ChangePasswordScreen/ChangePassword';
+import ChatBot from '@views/ChatBotScreen/ChatBot';
+import ChatBotList from '@views/ChatBotScreen/ChatBotList';
 
 const Stack = createNativeStackNavigator<StackParamList>();
 
@@ -50,6 +52,31 @@ export function HistoryImageNavigatior({ navigation }: DrawerProps) {
         name="HistoryImage"
         options={{
           title: 'HistoryImage',
+          headerTitle: () => <StackHeaderTitle />,
+          headerTitleAlign: 'center',
+        }}
+      />
+    </Stack.Navigator>
+  );
+}
+
+export function ChatBotNavigatior({ navigation }: DrawerProps) {
+  return (
+    <Stack.Navigator screenOptions={navigationProps}>
+      <Stack.Screen
+        component={ChatBotList}
+        name="ChatBotList"
+        options={{
+          title: 'ChatBot',
+          headerTitle: () => <StackHeaderTitle />,
+          headerTitleAlign: 'center',
+        }}
+      />
+      <Stack.Screen
+        component={ChatBot}
+        name="ChatBot"
+        options={{
+          title: 'ChatBot',
           headerTitle: () => <StackHeaderTitle />,
           headerTitleAlign: 'center',
         }}
