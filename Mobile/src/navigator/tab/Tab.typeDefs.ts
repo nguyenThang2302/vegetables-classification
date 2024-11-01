@@ -10,6 +10,7 @@ export type TabParamList = {
   HomeTab: undefined;
   ProfileTab: undefined;
   HistoryImageTab: undefined;
+  ChatBotTab: undefined;
 };
 
 export type TabProps = BottomTabScreenProps<TabParamList, keyof TabParamList>;
