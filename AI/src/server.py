@@ -14,7 +14,7 @@ app = FastAPI()
 class_names = ['Bean', 'Bitter_Gourd', 'Bottle_Gourd', 'Brinjal', 'Broccoli', 'Cabbage', 'Capsicum', 'Carrot', 'Cauliflower', 'Cucumber', 'Papaya', 'Potato', 'Pumpkin', 'Radish', 'Tomato']
 
 def get_vegetable_description(vegetable_name):
-    response = model.generate_content(f"Write a description of {vegetable_name}. Please return json response with format desciption:[{{ title: Title, contents: []}}].")
+    response = model.generate_content(f"Write a description of {vegetable_name}. Please return JSON.stringify response with format desciption:[{{ title: Title, contents: []}}].")
     return response.text
 
 def preprocess_image(image: Image.Image) -> np.ndarray:
@@ -53,5 +53,6 @@ async def predict(image: UploadFile = File(...)):
     # Preprocess and predict
     image_np = preprocess_image(image)
     prediction = model_prediction(image_np)
+    print(prediction)
 
     return JSONResponse(content={"prediction": prediction})

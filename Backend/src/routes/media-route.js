@@ -22,9 +22,7 @@ function addRoutes(router, middleware, controllers) {
         const data = await response.json();
         if (data.prediction.description !== null) {
           const jsonString = data.prediction.description
-          .replace(/```json\n/, '')
-          .replace(/```$/, '')
-          .trim();
+            .replace(/```json\n|```/g, '').trim();
           const jsonObject = JSON.parse(jsonString);
           req['description'] = jsonObject;
         }
